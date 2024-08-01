@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload Form</title>
+</head>
+<body>
+<h2>File Upload Form</h2>
+<form action="#" th:action="@{/upload}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <br>
+    <button type="submit">Upload</button>
+</form>
+
+<h2>파일 탐색기</h2>
+<table>
+    <thead>
+    <tr>
+        <td>업로드_파일명</td>
+        <td>업로드_시간</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${currentPath} != ${baseDir}">
+        <td><span><a th:href="@{/upload(path=${parentPath})}" th:text="'..'"></a></span></td>
+        <td><span></span></td>
+    </tr>
+    <tr th:each="file : ${files}">
+        <td th:if="${file.isDirectory}"><a
+           th:href="@{/upload(path=${file.path})}"
+                     th:text="${file.name}"></a></span></td>
+        <td><span th:if="${!file.isDirectory}">
+            <a th:href="@{/uploads/{path}(path=${file.path})}" th:text="${file.originalName}"></a>
+        </span></td>
+        <td><span th:if="${file.uploadedAt != null}" th:text="${file.uploadedAt}"></span></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
