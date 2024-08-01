@@ -62,8 +62,8 @@ jobs:
         with:
           aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
           aws_secret_key: ${{secrets.AWS_SECRET_KEY}}
-          application_name: fourj-storage-server-ci-cd
-          environment_name: Fourj-storage-server-ci-cd-env
+          application_name: fourj-storage-server
+          environment_name: Fourj-storage-server-env
           version_label: github-action-${{github.run_id}}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
