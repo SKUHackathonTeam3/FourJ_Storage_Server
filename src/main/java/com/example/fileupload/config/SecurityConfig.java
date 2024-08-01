@@ -17,9 +17,7 @@ public class SecurityConfig {
         http
                 .securityMatcher("/h2-console/**")
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(
-                                "/h2-console/**",
-                                "/**")
+                        .requestMatchers("/h2-console/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
