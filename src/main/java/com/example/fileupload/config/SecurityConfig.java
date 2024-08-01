@@ -2,6 +2,7 @@ package com.example.fileupload.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,18 +16,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/h2-console/**")
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/h2-console/**")
+                        .requestMatchers(
+                                "/h2-console/**")
                         .permitAll()
                         .anyRequest().authenticated())
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-                .formLogin(formLogin ->
-                        formLogin
-                                .loginPage("/login") // 사용자 정의 로그인 페이지
-                                .permitAll() // 로그인 페이지는 모든 사용자에게 허용
-                )
+                .formLogin(Customizer.withDefaults())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**"))
+                .cors(Customizer.withDefaults())
                 .logout(LogoutConfigurer::permitAll);
         return http.build();
     }
