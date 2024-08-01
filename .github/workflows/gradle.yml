@@ -49,6 +49,13 @@ jobs:
         run: ./gradlew clean build -Dspring.profiles.active=prod -x test
         shell: bash
 
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2  # 현재 시간 정보 획득
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+          
       - name: Generate deployment package
         run: |
           mkdir -p deploy	
@@ -64,7 +71,7 @@ jobs:
           aws_secret_key: ${{secrets.AWS_SECRET_KEY}}
           application_name: fourj-storage-server
           environment_name: Fourj-storage-server-env
-          version_label: github-action-${{github.run_id}}
+          version_label: github-action-${{github.run_id}}-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
           wait_for_environment_recovery: 60
