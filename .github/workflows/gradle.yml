@@ -1,0 +1,64 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:	#각 단계들을 정의
+      - name: Checkout	#단계의 이름
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      ## gradle caching (빌드 시간 줄이기)
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+        shell: bash
+
+      - name: Generate deployment package
+        run: |
+          mkdir -p deploy	
+          cp build/libs/*.jar deploy/application.jar	
+          cp Procfile deploy/Procfile	
+          cp -r .ebextensions deploy/.ebextensions	
+          cp -r .platform deploy/.platform	
+          cd deploy && zip -r deploy.zip .	
+
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
+          aws_secret_key: ${{secrets.AWS_SECRET_KEY}}
+          application_name: fourj-storage-server-ci-cd
+          environment_name: Fourj-storage-server-ci-cd-env
+          version_label: github-action-${{github.run_id}}
+          region: ap-northeast-2
+          deployment_package: deploy/deploy.zip
+          wait_for_environment_recovery: 60
