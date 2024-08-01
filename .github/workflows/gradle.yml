@@ -46,13 +46,13 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean build -Dspring.profiles.active=prod -x test
         shell: bash
 
       - name: Generate deployment package
         run: |
           mkdir -p deploy	
-          cp build/libs/*.jar deploy/application.jar	
+          cp build/libs/*SNAPSHOT.jar deploy/application.jar	
           cp Procfile deploy/Procfile	
           cp -r .ebextensions deploy/.ebextensions	
           cd deploy && zip -r deploy.zip .	
