@@ -18,7 +18,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/h2-console/**")
+                                "/h2-console/**",
+                                "/uploads/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
