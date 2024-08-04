@@ -26,6 +26,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/h2-console/**"))
                 .cors(Customizer.withDefaults())
+                .headers(
+                   headersConfigurer ->
+                            headersConfigurer
+                                   .frameOptions(
+                                            HeadersConfigurer.FrameOptionsConfig::sameOrigin
+                                    ))
                 .logout(LogoutConfigurer::permitAll);
         return http.build();
     }
